@@ -53,3 +53,47 @@ Key Features:
     Guardrails: Implemented pre-execution checks to prevent unauthorized API calls.
 
 
+## Multi-server MCP Client
+
+Here's a diagram of what our MCP host architecture will look like:
+
+<img src="https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/livCvmEhvl24XOyqA45Kgg/multi-server-client.png" width="75%" />  
+
+-   We'll use a **multi-server client** that creates two sessions each connecting to different MCP servers
+    
+-   The Context7 MCP server will be connected via HTTP (remote URL)
+    
+-   The Met Museum MCP server will be connected via STDIO (download locally, then connect)
+    
+-   The Met Museum MCP server exposes its tools through **Web APIs** to access The Metropolitan Museum of Art's catalogue
+    
+-   Context7 provides tools by accessing **remote repositories** of up-to-date documentation
+    
+
+## LangChain MCP Adapters
+
+After retrieving tools from our MCP servers, the client makes them available to an agent.
+
+<img src="https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/RdA1pvh1vdJyiicgXb8u3g/mcp-adapters.png" width="75%" />  
+
+-   The client communicates using the **Model Context Protocol**, so we need a way to make the tools compatible with LangChain
+    
+-   **LangChain MCP adapters** is a library that converts MCP tools into LangChain-compatible tools
+    
+-   We'll then integrate these tools into our **LangGraph ReAct Agent**
+    
+
+## ReAct Agent
+
+The following diagram shows how our ReAct agent (powered by **GPT-5**) processes a user prompt:
+
+<img src="https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/LZn04k0bH4Kp1dHKv0kLKQ/react-agent.png" width="75%" />  
+
+-   First, the input is passed to the agent (LLM), which decides which tool is best suited to answer the query
+    
+-   The agent calls the tool (adapted from the MCP client) and observes the output
+    
+-   This process **repeats** until the agent determines a final answer, which is then returned to the user
+    
+
+Now we're ready to build our application following these three main steps.
